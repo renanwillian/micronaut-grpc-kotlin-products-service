@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.renanwillian";
+option java_outer_classname = "ProductsService";
+option objc_class_prefix = "HLW";
+
+// localhost:50051/com.renanwillian/ProductsServiceService.send
+package com.renanwillian;
+
+service ProductsServiceService {
+  rpc send (ProductsServiceRequest) returns (ProductsServiceReply) {}
+}
+
+enum STATUS {
+  OK = 0;
+}
+
+message ProductsServiceRequest {
+  string name = 1;
+}
+
+message ProductsServiceReply {
+  string message = 1;
+}
