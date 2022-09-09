@@ -14,7 +14,7 @@ internal class ProductServiceImplTest {
     private val productService = ProductServiceImpl(productRepository)
 
     @Test
-    fun `when create method is call with valid data a ProductRes is returned`() {
+    fun `when create method is called with valid data a ProductRes is returned`() {
         val productInput = Product(id = null, name = "product name", price = 10.0, quantityInStock = 5)
         val productOutput = Product(id = 1, name = "product name", price = 10.0, quantityInStock = 5)
 
