@@ -2,6 +2,7 @@ package com.renanwillian.services.impl
 
 import com.renanwillian.dto.ProductReq
 import com.renanwillian.dto.ProductRes
+import com.renanwillian.exceptions.AlreadyExistsException
 import com.renanwillian.repository.ProductRepository
 import com.renanwillian.services.ProductService
 import com.renanwillian.util.toDomain
@@ -12,7 +13,14 @@ import jakarta.inject.Singleton
 class ProductServiceImpl(private val productRepository: ProductRepository) : ProductService {
 
     override fun create(req: ProductReq): ProductRes {
+        verifyName(req.name)
         val product = productRepository.save(req.toDomain())
         return product.toProductRes()
+    }
+
+    private fun verifyName(name: String) {
+        productRepository.findByNameIgnoreCase(name)?.let {
+            throw AlreadyExistsException(name)
+        }
     }
 }
