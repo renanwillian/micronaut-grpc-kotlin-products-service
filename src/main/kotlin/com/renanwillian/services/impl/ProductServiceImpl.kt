@@ -2,6 +2,7 @@ package com.renanwillian.services.impl
 
 import com.renanwillian.dto.ProductReq
 import com.renanwillian.dto.ProductRes
+import com.renanwillian.dto.ProductUpdateReq
 import com.renanwillian.exceptions.AlreadyExistsException
 import com.renanwillian.exceptions.ProductNotFoundException
 import com.renanwillian.repository.ProductRepository
@@ -23,6 +24,20 @@ class ProductServiceImpl(private val productRepository: ProductRepository) : Pro
         val product = productRepository.findById(id)
             .orElseThrow { ProductNotFoundException(id) }
         return product.toProductRes()
+    }
+
+    override fun update(req: ProductUpdateReq): ProductRes {
+        verifyName(req.name)
+        val product = productRepository.findById(req.id)
+            .orElseThrow { ProductNotFoundException(req.id) }
+
+        val copy = product.copy(
+            name = req.name,
+            price = req.price,
+            quantityInStock = req.quantityInStock
+        )
+
+        return productRepository.update(copy).toProductRes()
     }
 
     private fun verifyName(name: String) {
