@@ -1,5 +1,6 @@
 package com.renanwillian.resources
 
+import com.renanwillian.FindByIdServiceRequest
 import com.renanwillian.ProductServiceRequest
 import com.renanwillian.ProductServiceResponse
 import com.renanwillian.ProductsServiceGrpc
@@ -31,6 +32,26 @@ class ProductResources(private val productService: ProductService) : ProductsSer
         } catch (ex: BaseBusinessException) {
             responseObserver?.onError(ex.statusCode().toStatus()
                 .withDescription(ex.errorMessage()).asRuntimeException())
+        }
+    }
+
+    override fun findById(request: FindByIdServiceRequest?, responseObserver: StreamObserver<ProductServiceResponse>?) {
+        try {
+            val productRes = productService.findById(request!!.id)
+            val productResponse = ProductServiceResponse.newBuilder()
+                .setId(productRes.id)
+                .setName(productRes.name)
+                .setPrice(productRes.price)
+                .setQuantityInStock(productRes.quantityInStock)
+                .build()
+
+            responseObserver?.onNext(productResponse)
+            responseObserver?.onCompleted()
+        } catch (ex: BaseBusinessException) {
+            responseObserver?.onError(
+                ex.statusCode().toStatus()
+                    .withDescription(ex.errorMessage()).asRuntimeException()
+            )
         }
     }
 }
