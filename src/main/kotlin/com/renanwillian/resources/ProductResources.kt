@@ -33,7 +33,7 @@ class ProductResources(private val productService: ProductService) : ProductsSer
         }
     }
 
-    override fun findById(request: FindByIdServiceRequest?, responseObserver: StreamObserver<ProductServiceResponse>?) {
+    override fun findById(request: RequestById?, responseObserver: StreamObserver<ProductServiceResponse>?) {
         try {
             val productRes = productService.findById(request!!.id)
             val productResponse = ProductServiceResponse.newBuilder()
@@ -76,6 +76,20 @@ class ProductResources(private val productService: ProductService) : ProductsSer
         } catch (ex: BaseBusinessException) {
             responseObserver?.onError(ex.statusCode().toStatus()
                 .withDescription(ex.errorMessage()).asRuntimeException())
+        }
+    }
+
+    override fun delete(request: RequestById?, responseObserver: StreamObserver<Empty>?) {
+        try {
+            productService.delete(request!!.id)
+
+            responseObserver?.onNext(Empty.newBuilder().build())
+            responseObserver?.onCompleted()
+        } catch (ex: BaseBusinessException) {
+            responseObserver?.onError(
+                ex.statusCode().toStatus()
+                    .withDescription(ex.errorMessage()).asRuntimeException()
+            )
         }
     }
 }

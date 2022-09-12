@@ -1,9 +1,9 @@
 package com.renanwillian.resources
 
-import com.renanwillian.FindByIdServiceRequest
 import com.renanwillian.ProductServiceRequest
 import com.renanwillian.ProductServiceUpdateRequest
 import com.renanwillian.ProductsServiceGrpc
+import com.renanwillian.RequestById
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 
 @MicronautTest
 internal class ProductResourcesTestIT(
@@ -59,7 +60,7 @@ internal class ProductResourcesTestIT(
 
     @Test
     fun `when ProductsServiceGrpc findById method is called with valid id a success is returned`() {
-        val request = FindByIdServiceRequest.newBuilder().setId(1).build()
+        val request = RequestById.newBuilder().setId(1).build()
         val response = productsServiceBlockingStub.findById(request)
 
         assertEquals(1, response.id)
@@ -70,7 +71,7 @@ internal class ProductResourcesTestIT(
 
     @Test
     fun `when ProductsServiceGrpc findById method is called with invalid id a ProductNotFoundException is returned`() {
-        val request = FindByIdServiceRequest.newBuilder().setId(10).build()
+        val request = RequestById.newBuilder().setId(10).build()
 
         val response = assertThrows(StatusRuntimeException::class.java) {
             productsServiceBlockingStub.findById(request)
@@ -125,6 +126,27 @@ internal class ProductResourcesTestIT(
 
         val response = assertThrows(StatusRuntimeException::class.java) {
             productsServiceBlockingStub.update(request)
+        }
+
+        assertEquals(Status.NOT_FOUND.code, response.status.code)
+        assertEquals("Produto com ID ${request.id} não encontrado.", response.status.description)
+    }
+
+    @Test
+    fun `when ProductsServiceGrpc delete method is called with valid id a success is returned`() {
+        val request = RequestById.newBuilder().setId(1).build()
+
+        assertDoesNotThrow {
+            productsServiceBlockingStub.delete(request)
+        }
+    }
+
+    @Test
+    fun `when ProductsServiceGrpc delete method is called with invalid id a ProductNotFoundException is returned`() {
+        val request = RequestById.newBuilder().setId(10).build()
+
+        val response = assertThrows(StatusRuntimeException::class.java) {
+            productsServiceBlockingStub.delete(request)
         }
 
         assertEquals(Status.NOT_FOUND.code, response.status.code)
