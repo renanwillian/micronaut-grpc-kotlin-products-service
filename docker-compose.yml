@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  postgres:
+    container_name: postgres_products_service
+    image: postgres:12.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
+    ports:
+      - "5435:5432"
