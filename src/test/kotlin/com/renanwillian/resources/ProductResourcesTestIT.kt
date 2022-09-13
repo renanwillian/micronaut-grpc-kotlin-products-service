@@ -1,9 +1,6 @@
 package com.renanwillian.resources
 
-import com.renanwillian.ProductServiceRequest
-import com.renanwillian.ProductServiceUpdateRequest
-import com.renanwillian.ProductsServiceGrpc
-import com.renanwillian.RequestById
+import com.renanwillian.*
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -151,5 +148,17 @@ internal class ProductResourcesTestIT(
 
         assertEquals(Status.NOT_FOUND.code, response.status.code)
         assertEquals("Produto com ID ${request.id} não encontrado.", response.status.description)
+    }
+
+    @Test
+    fun `when ProductsServiceGrpc findAll method is called a list of ProductServiceResponse is returned`() {
+        val request = Empty.newBuilder().build()
+
+        val response = productsServiceBlockingStub.findAll(request)
+
+        assertEquals(1, response.getProducts(0).id)
+        assertEquals("Product A", response.getProducts(0).name)
+        assertEquals(10.99, response.getProducts(0).price)
+        assertEquals(10, response.getProducts(0).quantityInStock)
     }
 }

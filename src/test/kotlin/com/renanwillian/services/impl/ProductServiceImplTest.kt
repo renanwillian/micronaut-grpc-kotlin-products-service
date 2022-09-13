@@ -6,8 +6,7 @@ import com.renanwillian.dto.ProductUpdateReq
 import com.renanwillian.exceptions.AlreadyExistsException
 import com.renanwillian.exceptions.ProductNotFoundException
 import com.renanwillian.repository.ProductRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrowsExactly
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.Mockito
@@ -122,5 +121,31 @@ internal class ProductServiceImplTest {
     fun `when delete method is called with invalid id, throws ProductNotFoundException`() {
         `when`(productRepository.findById(1)).thenReturn(Optional.empty())
         assertThrowsExactly(ProductNotFoundException::class.java) { productService.delete(1) }
+    }
+
+    @Test
+    fun `when findAll method is called a list of ProductRes is returned`() {
+        val products = listOf(
+            Product(id = 1, name = "product 1", price = 10.0, quantityInStock = 5)
+        )
+
+        `when`(productRepository.findAll()).thenReturn(products)
+
+        val productRes = productService.findAll()
+
+        assertEquals(products.size, productRes.size)
+        assertEquals(products[0].id, productRes[0].id)
+        assertEquals(products[0].name, productRes[0].name)
+        assertEquals(products[0].price, productRes[0].price)
+        assertEquals(products[0].quantityInStock, productRes[0].quantityInStock)
+    }
+
+    @Test
+    fun `when findAll method is called without products a empty list of ProductRes is returned`() {
+        `when`(productRepository.findAll()).thenReturn(emptyList<Product>())
+
+        val productRes = productService.findAll()
+
+        assertTrue(productRes.isEmpty())
     }
 }

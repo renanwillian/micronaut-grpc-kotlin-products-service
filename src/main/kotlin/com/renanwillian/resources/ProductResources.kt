@@ -92,4 +92,22 @@ class ProductResources(private val productService: ProductService) : ProductsSer
             )
         }
     }
+
+    override fun findAll(request: Empty?, responseObserver: StreamObserver<ProductList>?) {
+        val productResList = productService.findAll()
+
+        val productServiceResponseList = productResList.map {
+            ProductServiceResponse.newBuilder()
+                .setId(it.id)
+                .setName(it.name)
+                .setPrice(it.price)
+                .setQuantityInStock(it.quantityInStock)
+                .build()
+        }
+
+        val response = ProductList.newBuilder().addAllProducts(productServiceResponseList).build()
+
+        responseObserver?.onNext(response)
+        responseObserver?.onCompleted()
+    }
 }
